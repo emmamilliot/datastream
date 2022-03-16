@@ -4,6 +4,9 @@ import json
 import time
 import requests as req
 
+
+
+
 #Function to get the data from Yahoo finance API
 def get_data():
     try:
@@ -12,15 +15,16 @@ def get_data():
         headers = {'x-api-key': "wDvhQlo9Td9PuDs5Jbh5l6Z8lKoHtulRknt1y1Sh"}
         data = req.request("GET", url, headers=headers, params=querystring) 
         
-        return data.text
+        return data.json()
     except:
         print("Syantax error")
 
 #Function to publish a message
-def publish_message(producerkey):
+def publish_message(producerkey,key,data_key):
     try:
-        producerkey.send('yfinanceapi', json.dumps(data).encode('utf-8'))
-        print("message published")
+        key_bytes = bytes(key, encoding='utf-8')
+        producerkey.send("yfinanceapi", json.dumps(data[key]).encode('utf-8'), key_bytes)
+        print('message_published')
     except:
         print("message not published")
 
@@ -35,8 +39,11 @@ def kafka_producer_connection():
 #Declearing main function
 if __name__=="__main__":
     data = get_data()
+    # print(len(data))
     if len(data) > 0:
+        # print(data)
         kafka_producer = kafka_producer_connection()
-        for key in sorted(data):
-            publish_message( kafka_producer)
+        # print(len(data))
+        for i,key in enumerate(sorted(data)):
+            publish_message(kafka_producer,key, data[key])
             time.sleep(60)

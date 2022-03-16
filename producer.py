@@ -4,9 +4,6 @@ import json
 import time
 import requests as req
 
-
-
-
 #Function to get the data from Yahoo finance API
 def get_data():
     try:
@@ -37,7 +34,7 @@ def kafka_producer_connection():
         print("Connection error")
 
 #Declearing main function
-if __name__=="__main__":
+while True:
     data = get_data()
     # print(len(data))
     if len(data) > 0:
@@ -46,4 +43,4 @@ if __name__=="__main__":
         # print(len(data))
         for i,key in enumerate(sorted(data)):
             publish_message(kafka_producer,key, data[key])
-            time.sleep(60)
+            time.sleep(2)

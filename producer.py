@@ -9,7 +9,7 @@ def get_data():
     try:
         url = "https://yfapi.net/v6/finance/quote"
         querystring = {"symbols":"AAPL,EURUSD=X"}
-        headers = {'x-api-key': "wDvhQlo9Td9PuDs5Jbh5l6Z8lKoHtulRknt1y1Sh"}
+        headers = {'x-api-key': "Api key..."}
         data = req.request("GET", url, headers=headers, params=querystring) 
         
         return data.json()

@@ -26,10 +26,12 @@ Create a topic named yfinanceapi: bin/kafka-topics.sh --create --topic yfinancea
 Read the doc : https://pypi.org/project/yfinance/
 
 $ pip install yfinance
-version working : yfinance 0.1.70
+
+*version working : yfinance 0.1.70*
 
 
 ## River requirements
 
 $ pip install river
-version working : river-0.10.1
+
+*version working : river-0.10.1*

@@ -32,6 +32,8 @@ $ pip install yfinance
 
 ## River requirements
 
+Read the doc : https://riverml.xyz/latest/
+
 $ pip install river
 
 *version working : river-0.10.1*

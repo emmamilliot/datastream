@@ -62,7 +62,7 @@ while True:
     data = get_data(i)
     if len(data) > 0:
         kafka_producer = kafka_producer_connection()
-        for i,key in enumerate(sorted(data)):
+        for j,key in enumerate(sorted(data)):
             publish_message(kafka_producer,key, data[key])
     i+=1
     time.sleep(60)

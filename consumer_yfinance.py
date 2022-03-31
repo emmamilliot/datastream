@@ -25,7 +25,7 @@ trues = open('true_archive.txt','a')
 
 #model
 model=(pp.StandardScaler() |
-       HoeffdingTreeRegressor(
+       HoeffdingAdaptiveTreeRegressor(
            grace_period=100,
            leaf_prediction='adaptive',
            model_selector_decay=0.9)

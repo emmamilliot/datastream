@@ -20,7 +20,8 @@ try:
     consumer = KafkaConsumer('yfinanceapi',bootstrap_servers=['localhost:9092'])
 except:
     print('connection error')
-
+preds = open('pred_archive.txt','a')
+trues = open('true_archive.txt','a')
 
 #model
 model=(pp.StandardScaler() |
@@ -53,16 +54,34 @@ def stock_prediction(n_wait=3, verbose=False):
     y_pred = None
     for i, msg in enumerate(consumer):
         data = json.loads(msg.value.decode('utf-8'))
-        # Predict
+
+        #Feature engeeniring 
+        f = [] #our features
+        for i in [5, 10, 30]:
+          omean = data.iloc[-i:-1].Open.mean()  #mean value of Open price
+          ostd = data.iloc[-i:-1].Open.std()  #standard deviation value of Open price
+          osum = data.iloc[-i:-1].Open.sum()  #sum value of Open price (like ecart-type)
+          volmean = data.iloc[-i:-1].Volume.mean()  #mean value of the Volume
+          volstd = data.iloc[-i:-1].Volume.std()  #std value of the Volume
+          volsum = data.iloc[-i:-1].Volume.sum()  #sum value of the Volume
+          diffclose = data.iloc[-i].Close - data.iloc[-2].Close  #difference between Closing prices
+          columns = np.array([omean, ostd, osum, volmean, volstd, volsum, diffclose])  
+          f.append(columns)
+        f = np.array(f).flatten() #Return a copy of the array collapsed into one dimension.
+        columns_update = [[f'omean_{t}', f'ostd_{t}', f'osum_`{t}', f'vol_mean_{t}', f'vol_std_{t}', f'vol_sum_{t}', f'diffclose_`{t}'] for t in timestamp]  #update of the colums value with the timestamp
+        columns_update = np.array(columns_update).flatten()  #Return a copy of the array collapsed into one dimension.
+        x = {columns_update[i] : f[i] for i in range(len(f))}  #new x column
+        
+        # True value and prediction
         y_pred_prev = y_pred
         actual_value = data['Close']
         y = data['y_true']
         del data['y_true']
-        x = data
+        # x = data
         # print('x',x,'y',y)
         y_pred = model.predict_one(x)
-        true_y.append(y)
-        pred_y.append(y_pred)
+        true_y.append(actual_value)
+        pred_y.append(y_pred_prev)
         print(f'The predicted value was {y_pred_prev}, the actual value is {actual_value}')
         # plt.scatter(i,y_pred_prev)
         # plt.scatter(i,actual_value)
@@ -82,6 +101,9 @@ def stock_prediction(n_wait=3, verbose=False):
         
         np.save('y_true.npy', true_y)
         np.save('y_pred.npy', pred_y)
+
+        preds.write(str(actual_value)+',')
+        trues.write(str(y_pred_prev)+',')
     return pd.DataFrame(raw_results, columns=['model', 'id', 'MSE', 'MSE_roll', 'MAE', 'MAE_roll']), true_y, pred_y
 
 # #getting data and predicting result using the model

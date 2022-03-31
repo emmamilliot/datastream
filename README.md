@@ -20,6 +20,8 @@ Execute : bin/kafka-server-start.sh config/server.properties (keep a shell runni
 
 Create a topic named yfinanceapi: bin/kafka-topics.sh --create --topic yfinanceapi --bootstrap-server localhost:9092
 
+Then execute consumer_finance.py and then (on another instance) producer_finance.py
+
 
 ## Yfinance library 
 
